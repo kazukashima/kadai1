@@ -2,8 +2,8 @@ name: Scheduled deploy
 
 on:
   schedule:
-    - cron: "0 6 * * *"
-  workflow_dispatch:
+    - cron: "0 6 * * *"     # UTC 6:00（日本時間だと15:00）
+  workflow_dispatch:         # 手動実行ボタン
 
 jobs:
   build:
@@ -11,13 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: '20'
+          cache: npm
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
       - name: Run build
         run: npm run build
 
@@ -27,26 +31,33 @@ jobs:
     needs: build
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Setup Node.js and cache
-        uses: actions/setup-node@v2
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
-      - name: Install firebase-tools
-        run: npm install --save-dev firebase-tools
+          node-version: '20'
+          cache: npm
+
+      # ★ deployでも必ずビルドして dist を作る（build成果物を渡さない設計のため）
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # --- サービスアカウントJSONで認証（FIREBASE_TOKENは不要） ---
       - name: Decode Firebase service account key
         run: |
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./firebase-key.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=${{ github.workspace }}/firebase-key.json" >> $GITHUB_ENV
-      - name: change space
-        run: ./node_modules/.bin/firebase use ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      - name: Select project
+        run: npx firebase use "${{ secrets.FIREBASE_PROJECT_ID }}"
+
       - name: Deploy to Firebase Hosting
-        run: |
-          ./node_modules/.bin/firebase deploy
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_CLI_EXPERIMENTS: webframeworks
-      - name: delete GOOGLE_APPLICATION_CREDENTIALS
-        run: rm $GOOGLE_APPLICATION_CREDENTIALS
+        run: npx firebase deploy --only hosting
+
+      - name: Cleanup credentials
         if: ${{ always() }}
+        run: rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
