@@ -1,22 +1,20 @@
 name: Deploy to Firebase Hosting
 
 on:
-  push:
-    branches:
-      - main   # ← mainブランチにpushされたら動く
+  schedule:
+    - cron: "0 6 * * *"   # 毎日 UTC 06:00（JST 15:00）
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -24,8 +22,18 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Decode Firebase key
-        run: echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > $GITHUB_WORKSPACE/firebase-key.json
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
 
-      - name: Deploy to Firebase
-        run: npx firebase deploy --only hosting --project kadai2-de12e --token "${{ secrets.FIREBASE_TOKEN }}"
+      - name: Write service account (from secret)
+        run: echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > "$GITHUB_WORKSPACE/firebase-key.json"
+
+      - name: Deploy to Firebase Hosting
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-key.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: firebase deploy --only hosting --project $FIREBASE_PROJECT_ID
+
+      - name: Cleanup credentials
+        if: always()
+        run: rm -f "$GITHUB_WORKSPACE/firebase-key.json"
