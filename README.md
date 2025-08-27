@@ -15,7 +15,7 @@ React × Supabase を用いた学習記録アプリです。
 
 ---
 
-## ⚙️ 環境設定 ## 起動手順
+## ⚙️ 環境設定 
 
 ルートディレクトリに `.env` ファイルを作成し、以下の内容を記述してください。
 
@@ -28,19 +28,18 @@ VITE_SUPABASE_ANON_KEY="SupabaseのProject API Keys"
 
 
 ## 🚀 起動手順
-bash
-Copy code
-$ git clone https://github.com/kazukashima/kadai1.git
-$ cd kadai1
-$ npm i
-$ npm run dev
+```
+git clone https://github.com/kazukashima/kadai1.git
+cd kadai1
+npm i
+npm run dev
+```
 ---
 
 ## 🧪 テスト実行
-bash
-Copy code
-$ npm test
-
+```
+npm test
+```
 ---
 ## 💡 使用技術
 React
