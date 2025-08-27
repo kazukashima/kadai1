@@ -1,12 +1,45 @@
-# React + Vite
+# 📚 学習記録アプリ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🛠 サービス概要
 
-Currently, two official plugins are available:
+React × Supabase を用いた学習記録アプリです。  
+ユーザーは日々の学習内容と学習時間を登録・管理できます。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✅ 主な機能
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- ✅ 学習内容と学習時間の登録  
+- ✅ 学習内容と学習時間の削除  
+- ✅ 学習時間の合計表示  
+
+---
+
+## ⚙️ 環境設定
+
+ルートディレクトリに `.env` ファイルを作成し、以下の内容を記述してください。
+
+```env
+VITE_SUPABASE_URL="SupabaseのProject URL"
+VITE_SUPABASE_ANON_KEY="SupabaseのProject API Keys"
+🚀 起動手順
+bash
+Copy code
+$ git clone https://github.com/kazukashima/kadai1.git
+$ cd kadai1
+$ npm i
+$ npm run dev
+🧪 テスト実行
+bash
+Copy code
+$ npm test
+💡 使用技術
+React
+
+Vite
+
+Supabase
+
+Jest
+
+Testing Library
