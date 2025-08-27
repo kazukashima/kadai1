@@ -42,8 +42,4 @@ npm test
 ```
 ---
 ## 💡 使用技術
-React
-Vite
-Supabase
-Jest
-Testing Library
+React, Vite, Supabase, Jest, Testing Library
